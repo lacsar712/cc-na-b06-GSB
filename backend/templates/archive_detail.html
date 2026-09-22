@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>存档 #{{ archive.id }} 核对</h1>
+<p>查询字：<strong>{{ archive.note_keyword }}</strong> · 判词条件：<strong>{% if archive.verdict %}{{ archive.verdict }}{% else %}不限{% endif %}</strong> · 存档人 {{ archive.saved_by }} · {{ archive.created_at|date:"Y-m-d H:i" }}</p>
+{% if has_diff %}<p class="bad">存档后有变化：附言被改过的行标为过期，另有新增或掉出。</p>{% else %}<p class="ok">存档至今没有变化。</p>{% endif %}
+<div style="display:flex; gap:16px; flex-wrap:wrap;">
+  <div style="flex:1; min-width:340px;">
+    <h2>存档时命中（{{ archived|length }}）</h2>
+    <table>
+      <thead><tr><th>主键</th><th>存档附言</th><th>状态</th></tr></thead>
+      <tbody>
+      {% for item in archived %}
+        <tr {% if item.stale %}style="background:#fdecec"{% endif %}>
+          <td>{{ item.inspection_id }}</td>
+          <td>{{ item.note_snapshot }}</td>
+          <td>
+            {% if item.stale %}<span class="bad">过期（附言已改）</span>{% endif %}
+            {% if not item.still_matches %}<span class="bad">本次重查已不含</span>{% endif %}
+            {% if item.still_matches and not item.stale %}<span class="ok">仍命中</span>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">存档时没有相符附言</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="flex:1; min-width:340px;">
+    <h2>此刻重新查询命中（{{ current_rows|length }}）</h2>
+    <table>
+      <thead><tr><th>主键</th><th>此刻附言</th><th>状态</th></tr></thead>
+      <tbody>
+      {% for row in current_rows %}
+        <tr {% if row.stale %}style="background:#fdecec"{% elif row.new %}style="background:#eef7ee"{% endif %}>
+          <td>{{ row.inspection_id }}</td>
+          <td>{{ row.note }}</td>
+          <td>
+            {% if row.stale %}<span class="bad">过期（附言已改）</span>
+            {% elif row.new %}<span class="ok">新增命中</span>
+            {% else %}<span class="ok">仍命中</span>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">没有相符附言</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<p><a href="{% url 'archive_list' %}">返回存档列表</a></p>
+{% endblock %}

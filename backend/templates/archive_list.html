@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>查询存档</h1>
+<table>
+  <thead><tr><th>存档</th><th>查询字</th><th>判词条件</th><th>命中主键</th><th>存档人</th><th>存档时间</th><th></th></tr></thead>
+  <tbody>
+  {% for a in archives %}
+    <tr>
+      <td>#{{ a.id }}</td>
+      <td>{{ a.note_keyword }}</td>
+      <td>{% if a.verdict %}{{ a.verdict }}{% else %}不限{% endif %}</td>
+      <td>{% for hit in a.hits.all %}{{ hit.inspection_id }}{% if not forloop.last %}、{% endif %}{% empty %}（无）{% endfor %}</td>
+      <td>{{ a.saved_by }}</td>
+      <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'archive_detail' a.pk %}">核对</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7">还没有存档，先去<a href="{% url 'search' %}">附言查询</a>查一次。</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

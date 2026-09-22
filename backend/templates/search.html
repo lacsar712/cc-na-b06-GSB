@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>附言查询</h1>
+<form class="card" method="get" style="max-width:520px">
+  <label>附言里的字</label>
+  <input name="q" value="{{ keyword }}" />
+  <label>判词</label>
+  <select name="verdict">
+    <option value="" {% if not verdict %}selected{% endif %}>不限</option>
+    <option value="合格" {% if verdict == '合格' %}selected{% endif %}>合格</option>
+    <option value="不合格" {% if verdict == '不合格' %}selected{% endif %}>不合格</option>
+  </select>
+  <button type="submit">查询</button>
+</form>
+
+{% if searched %}
+<h2>本次命中</h2>
+{% if no_match %}
+<p>没有相符附言</p>
+{% else %}
+<table>
+  <thead><tr><th>主键</th><th>编号</th><th>结论</th><th>附言</th><th></th></tr></thead>
+  <tbody>
+  {% for row in results %}
+    <tr>
+      <td>{{ row.id }}</td>
+      <td>{{ row.aid_code }}</td>
+      <td class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</td>
+      <td>{{ row.note }}</td>
+      <td><a href="{% url 'detail' row.pk %}">详情</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<form method="post" action="{% url 'archive_save' %}">
+  {% csrf_token %}
+  <input type="hidden" name="q" value="{{ keyword }}" />
+  <input type="hidden" name="verdict" value="{{ verdict }}" />
+  <button type="submit">把这次命中存下来</button>
+</form>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>修改附言</h1>
+<p>{{ row.aid_code }} · <span class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</span></p>
+<form class="card" method="post">
+  {% csrf_token %}
+  <label>附言</label>
+  <input name="note" maxlength="200" value="{{ row.note }}" />
+  <button type="submit">保存</button>
+</form>
+<p><a href="{% url 'detail' row.pk %}">返回详情</a></p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}改附言 · {{ row.aid_code }}{% endblock %}
+{% block body %}
+<h1>改附言 · {{ row.aid_code }}</h1>
+<p>判词（{{ row.verdict }}）与实测数值不变，只改附言。</p>
+{% if error %}<p class="err">{{ error }}</p>{% endif %}
+<form class="card" method="post">
+  {% csrf_token %}
+  <label>附言</label>
+  <input name="note" maxlength="200" value="{{ row.note }}" />
+  <button type="submit">保存附言</button>
+</form>
+<p><a href="{% url 'detail' row.pk %}">返回详情</a></p>
+{% endblock %}

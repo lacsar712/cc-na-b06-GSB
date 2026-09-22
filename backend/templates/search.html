@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}查附言 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>按附言和判词查询</h1>
+<form class="card" method="get">
+  <input type="hidden" name="q" value="1" />
+  <label>附言查询字</label>
+  <input name="keyword" value="{{ keyword }}" />
+  <label>判词条件</label>
+  <select name="verdict">
+    <option value="" {% if not verdict %}selected{% endif %}>不限</option>
+    {% for v in verdicts %}
+      <option value="{{ v }}" {% if verdict == v %}selected{% endif %}>{{ v }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">查询</button>
+  {% if error %}<p class="err">{{ error }}</p>{% endif %}
+</form>
+
+{% if searched %}
+  {% if no_match %}
+    <p class="err">没有相符附言。</p>
+  {% else %}
+    <h2>查询结果（{{ rows|length }} 条）</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="keyword" value="{{ keyword }}" />
+      <input type="hidden" name="verdict" value="{{ verdict }}" />
+      <button type="submit">把这次命中存下来</button>
+    </form>
+    <table>
+      <thead><tr><th>主键</th><th>编号</th><th>判词</th><th>附言</th><th></th></tr></thead>
+      <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.pk }}</td>
+          <td>{{ row.aid_code }}</td>
+          <td class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</td>
+          <td>{{ row.note }}</td>
+          <td><a href="{% url 'detail' row.pk %}">详情</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endif %}
+{% endblock %}

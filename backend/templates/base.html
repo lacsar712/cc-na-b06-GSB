@@ -13,9 +13,13 @@
     .ok { color: #0b6b3a; } .bad { color: #9b1c1c; }
     form.card { background: #fff; padding: 16px; max-width: 420px; }
     label { display: block; margin: 10px 0 4px; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    input, select { width: 100%; padding: 8px; box-sizing: border-box; }
     button { margin-top: 14px; background: #0f3d3e; color: #fff; border: 0; padding: 8px 16px; }
     .err { color: #9b1c1c; }
+    .stale { color: #9b1c1c; font-weight: 600; }
+    .fresh { color: #0b6b3a; }
+    .newrow { color: #8a5a00; }
+    .note-line { color: #55736c; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -23,6 +27,8 @@
     <strong>航标灯光巡检台</strong>
     {% if user.is_authenticated %}
       <a href="{% url 'list' %}">巡检记录</a>
+      <a href="{% url 'search' %}">查附言</a>
+      <a href="{% url 'archives' %}">存档</a>
       {% if can_write %}<a href="{% url 'create' %}">登记</a>{% endif %}
       <span style="margin-left:auto">{{ user.username }}</span>
       <a href="{% url 'logout' %}">退出</a>

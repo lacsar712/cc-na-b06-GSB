@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}存档 #{{ archive.pk }} 核对 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>存档 #{{ archive.pk }} 核对</h1>
+<p>
+  查询字“{{ archive.keyword }}”，判词条件
+  {% if archive.verdict %}“{{ archive.verdict }}”{% else %}不限{% endif %}；
+  存档人 {{ archive.created_by }}，存档于 {{ archive.created_at|date:"Y-m-d H:i" }}。
+</p>
+<p>
+  存档命中 <strong>{{ archived_count }}</strong> 个主键，此刻重新查询命中
+  <strong>{{ current_count }}</strong> 个；其中
+  <span class="stale">{{ stale_count }}</span> 个已过期。
+</p>
+
+<h2>存档主键 vs 此刻查询（并排）</h2>
+<table>
+  <thead>
+    <tr>
+      <th>主键</th><th>编号</th>
+      <th>存档时附言</th><th>存档时判词</th>
+      <th>此刻附言</th><th>此刻判词</th>
+      <th>状态</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for c in comparison %}
+    <tr>
+      <td>{{ c.pk }}</td>
+      <td>{{ c.aid_code }}</td>
+      <td>{{ c.archived_note }}</td>
+      <td>{{ c.archived_verdict }}</td>
+      <td>{{ c.current_note }}</td>
+      <td>{{ c.current_verdict }}</td>
+      <td class="{% if c.status == '过期' %}stale{% else %}fresh{% endif %}">
+        {{ c.status }}{% if c.reason %}（{{ c.reason }}）{% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7">存档时没有相符附言，主键集合为空。</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>此刻新增的命中</h2>
+<table>
+  <thead><tr><th>主键</th><th>编号</th><th>判词</th><th>附言</th><th></th></tr></thead>
+  <tbody>
+  {% for row in new_rows %}
+    <tr>
+      <td>{{ row.pk }}</td>
+      <td>{{ row.aid_code }}</td>
+      <td class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</td>
+      <td>{{ row.note }}</td>
+      <td><a href="{% url 'detail' row.pk %}">详情</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">没有新增命中。</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<p><a href="{% url 'archives' %}">返回存档列表</a></p>
+{% endblock %}
